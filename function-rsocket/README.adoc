@@ -1,0 +1,7 @@
+- Start the application
+
+Post something 
+
+```
+curl -d "hello" -X POST -H "Content-Type: application/json"  -H "address=localhost" http://localhost:8080/whatever
+```
