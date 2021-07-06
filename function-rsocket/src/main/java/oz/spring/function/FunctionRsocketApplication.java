@@ -17,6 +17,9 @@ import reactor.core.publisher.Flux;
 @SpringBootApplication
 public class FunctionRsocketApplication {
 
+	/*
+	 * You can autowire is like here or you can also inject it into `function(RSocketRequester.Builder rsocketRequesterBuilder)` factory method.
+	 */
 	@Autowired
 	private RSocketRequester.Builder rsocketRequesterBuilder;
 
@@ -29,12 +32,24 @@ public class FunctionRsocketApplication {
 	public Function<Flux<Message<String>>, Flux<Message<String>>> function() {
 		return flux -> flux.<Message<String>>map(message -> {
 			String uri = (String) message.getHeaders().get("uri");
+			/*
+			 * - The message's payload is the body of HTTP request and its headers are HttpHeaders plus URI (see above),
+			 *   so you have access to all of that.
+			 * - Also, from the code below you can see that you can send and receive and instanceof Message.
+			 * - For the `route(..)` call you typically provide the value of function definition you are attempting to invoke.
+			 *   However, if utilizing function routing features by for example providing system property or header `spring.cloud.function.routing-expression`,
+			 *   (e.g., --spring.cloud.function.routing-expression=headers.func_name) the value you put into `route(..)` is meaningless as it will fall back
+			 *   on definition extracted from `routing-expression`, effectively giving you a more dynamic way to delegate to many different functions.
+			 */
+
 //			Mono<Message<String>> retrieveMono = rsocketRequesterBuilder.tcp("", 222)
-//				.route("pojoToString")
+//				.route("function definition")
 //				.data(message)
 //				.retrieveMono(new ParameterizedTypeReference<Message<String>>() {
 //				});
-			return MessageBuilder.withPayload("Hello").build(); // temporary, replace when actual rsocket call is made (see above commented code)
+
+			// This return is temporary. Replace it when actual rsocket call is made (see above commented code)
+			return MessageBuilder.withPayload("Hello").build();
 		});
 
 	}
